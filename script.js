@@ -292,7 +292,7 @@ BoxPacker.prototype.each = function (callback) {
         renderer = new THREE.CanvasRenderer();
 
 	renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize(window.innerWidth, window.innerHeight - 100);
+        renderer.setSize(window.innerWidth, window.innerHeight - 120);
 
         scene_meshes = []
         scene_meshes = scene_meshes.concat(shelf(shelfDimensions));
