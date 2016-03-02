@@ -6,7 +6,6 @@ function mm(inches) {
     return Math.floor(inches * 25.4);
 }
 
-
 var Boxes = [
     {name: 'Paige 15', width: mm(12), depth: mm(15), height: mm(10)},
     {name: 'Archival Legal', width: mm(5), height: mm(10.25), depth: mm(15.25)},
@@ -16,12 +15,38 @@ var Boxes = [
     {name: 'DVD ', width: mm(0.55), height: mm(7.6), depth: mm(5.4), pile_options: { maxTowerCount: 1 }}
 ];
 
+var Shelves = [
+    {name: 'Default shelf', width: (1003 * 2), height: (266 * 3), depth: 500},
+    {name: 'record carton shelf (Remarque)', depth: mm(15.5), height: mm(10.5), width: mm(39.5)},
+    {name: 'oversize - short - TAM', depth: mm(32), height: mm(6.5), width: mm(39.5)},
+    {name: 'oversize - short - TAM 2', depth: mm(32), height: mm(6.5), width: mm(27.5)},
+    {name: '2 deep, 3 wide - 1 high', depth: mm(31.75), height: mm(11.75), width: mm(39.5)},
+    {name: '2 deep, 3 wide - 2 high', depth: mm(31.75), height: mm(22.75), width: mm(39.5)},
+    {name: 'oversize short', depth: mm(31.75), height: mm(10.75), width: mm(39.5)},
+    {name: "brent's cd shelf 1", depth: mm(7), height: mm(11), width: mm(41.5)},
+    {name: "brent's cd shelf 2", depth: mm(8.5), height: mm(12), width: mm(29.75)},
+    {name: 'Fales Media Storage 1', depth: mm(15), height: mm(16.75), width: mm(34)},
+    {name: 'Fales Media Storage 2', depth: mm(15), height: mm(12.75), width: mm(34)},
+]
 
 ////////////////////////////////////////////////////////////////////////
 // Utils
 //
 
 var Utils = {}
+
+var logTimer;
+Utils.log = function (msg) {
+    document.getElementById('messages').innerHTML = msg;
+
+    if (logTimer) {
+        clearTimeout(logTimer);
+    }
+
+    logTimer = setTimeout(function () {
+        document.getElementById('messages').innerHTML = '';
+    }, 2000);
+}
 
 Utils.choose_one = function (arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -131,7 +156,7 @@ BoxPacker.prototype.addBox = function (name, dimensions) {
     if ((dimensions.depth > this.shelfDimensions.depth) ||
         (dimensions.height > this.shelfDimensions.height) ||
         (dimensions.width > this.shelfDimensions.width)) {
-        console.log("Box is larger than shelf!");
+        Utils.log("Box is larger than shelf!");
         return false;
     }
 
@@ -150,7 +175,7 @@ BoxPacker.prototype.addBox = function (name, dimensions) {
         if (this.pile_fits(pile)) {
             this.piles.push(pile);
         } else {
-            console.log("Out of space while placing box!");
+            Utils.log("Out of space while placing box!");
             return false;
         }
     }
@@ -196,23 +221,18 @@ BoxPacker.prototype.each = function (callback) {
     var camera, scene, renderer;
     var meshes = [];
 
-    var rotateSpeed = 0.005;
+    var rotateSpeed = 0;
 
     var texture_loader = new THREE.TextureLoader();
 
-    var texture_files = ['cardboard.jpg', 'red.jpg', 'blue.jpg', 'paper.jpg', 'litter.jpg', 'orange.jpg', 'grey.jpg'];
-    var textures = [];
-
-    texture_files.forEach(function (file) {
-        textures.push(texture_loader.load(file));
-    });
+    var textures = [0xff595e, 0xffca3a, 0x8ac926, 0x1982c4, 0x6a4c93, 0x1b85b8, 0x5a5255, 0x559e83, 0xae5a41, 0xc3cb71];
 
     function shelf(opts) {
         var mesh = new THREE.Mesh(new THREE.BoxGeometry(opts.width, opts.height, opts.depth),
                                   new THREE.MeshBasicMaterial({ opacity: 0 }));
         meshes.push(mesh);
 
-        return [mesh, new THREE.EdgesHelper(mesh, 0xffffff)];
+        return [mesh, new THREE.EdgesHelper(mesh, 0xaaaaaa)];
     }
 
     function texture_for(opts) {
@@ -222,26 +242,27 @@ BoxPacker.prototype.each = function (callback) {
     }
 
     function box(opts) {
-        var mesh = new THREE.Mesh(new THREE.BoxGeometry(opts.width, opts.height, opts.depth),
-                                  new THREE.MeshBasicMaterial({ map: texture_for(opts) }));
+        var mesh = new THREE.Mesh(new THREE.BoxGeometry(opts.width, opts.height, opts.depth, 4, 4, 4),
+                                  new THREE.MeshBasicMaterial({ color: texture_for(opts) }));
 
         if (opts.position) {
             mesh.position.set.apply(mesh.position, opts.position);
         }
 
         meshes.push(mesh);
-        return [mesh];
+
+        return [mesh, new THREE.EdgesHelper(mesh, 0x000000)];
     }
 
-    function init() {
-        shelfDimensions = {width: (1003 * 2), height: (266 * 3), depth: 500};
+    function init(shelf) {
+        shelfDimensions = shelf;
         packer = new BoxPacker(shelfDimensions);
 
-        var i;
-        for (i = 0; i < 10; i++) {
-            var randomBox = Utils.choose_one(Boxes)
-            packer.addBox(randomBox.name, randomBox);
-        }
+        // var i;
+        // for (i = 0; i < 10; i++) {
+        //     var randomBox = Utils.choose_one(Boxes)
+        //     packer.addBox(randomBox.name, randomBox);
+        // }
 
         renderScene();
     }
@@ -249,13 +270,23 @@ BoxPacker.prototype.each = function (callback) {
     function renderScene() {
         scene = new THREE.Scene();
 
-        camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 4000);
-        camera.position.set(0, 0, 1400);
+        var oldPosition = undefined;
+        if (camera) {
+            oldPosition = camera.position;
+        }
+
+        camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 10000);
+        if (oldPosition) {
+            camera.position.set(oldPosition.x, oldPosition.y, oldPosition.z);
+        } else {
+            camera.position.set(0, 0, 1400);
+        }
         camera.lookAt(scene.position);
         camera.updateProjectionMatrix();
 
         renderer = new THREE.CanvasRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight - 50);
+	renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize(window.innerWidth, window.innerHeight - 100);
 
         scene_meshes = []
         scene_meshes = scene_meshes.concat(shelf(shelfDimensions));
@@ -299,13 +330,14 @@ BoxPacker.prototype.each = function (callback) {
                     lastXPos = e.pageX;
                     lastReadTime = now;
 
-                    rotateSpeed = pixels_per_ms / 2.0;
+                    rotateSpeed = pixels_per_ms / 4.0;
                 }
             }
         });
 
         root.addEventListener('mouseup', function () {
             mouseDown = false;
+            rotateSpeed = 0;
         });
     }
 
@@ -326,14 +358,37 @@ BoxPacker.prototype.each = function (callback) {
         renderer.render(scene, camera);
     }
 
-    init();
+    init(Shelves[0]);
     animate();
 
-    document.getElementById('addBox').addEventListener('click', function () {
-        var randomBox = Utils.choose_one(Boxes)
-        packer.addBox(randomBox.name, randomBox);
-        renderScene();
+    var buttonBar = document.getElementById('buttonBar');
+
+    Boxes.forEach(function (box) {
+        var button = document.createElement('button');
+        button.appendChild(document.createTextNode(box.name));
+
+        button.addEventListener('click', function () {
+            packer.addBox(box.name, box);
+            renderScene();
+        });
+
+        buttonBar.appendChild(button);
+    })
+
+    var shelfSelector = document.createElement('select');
+    shelfSelector.setAttribute('class', 'shelfSelector');
+    shelfSelector.addEventListener('change', function () {
+        init(Shelves[shelfSelector.selectedIndex]);
     });
+
+    Shelves.forEach(function (shelf, idx) {
+        var option = document.createElement('option');
+        option.appendChild(document.createTextNode(shelf.name));
+
+        shelfSelector.appendChild(option);
+    });
+
+    buttonBar.appendChild(shelfSelector);
 
 
 }());

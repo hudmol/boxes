@@ -11,14 +11,40 @@
 	     overflow: hidden;
 	 }
 
+         button {
+             margin-right: 5px;
+         }
+
+         .hud {
+             padding-left: 1em;
+         }
+
+         .shelfSelector {
+             margin-left: 5em;
+         }
+
+         #buttonBar {
+             display: inline-block;
+             float: left;
+             margin-right: 5em;
+         }
+
+         #messages {
+             float: left;
+         }
+
 	</style>
     </head>
     <body>
 
         <div id="drawing"></div>
 
-        <button id="addBox">Add a box!</button>
+        <div class="hud">
+            <p>Click below to add boxes.  Click + drag to rotate the shelf display</p>
 
+            <div id="buttonBar"></div>
+            <div id="messages"></div>
+        </div>
 	<script src="three.js/build/three.min.js"></script>
 	<script src="three.js/examples/js/renderers/CanvasRenderer.js"></script>
 	<script src="three.js/examples/js/renderers/Projector.js"></script>
