@@ -198,7 +198,7 @@ BoxPacker.prototype.each = function (callback) {
             }
 
             // Translate each box from corner origin to centre origin
-            callback(box.dimensions,
+            callback(box,
                      [
                          xPosition - (self.shelfDimensions.width / 2) + (box.dimensions.width / 2),
                          yPosition - (self.shelfDimensions.height / 2) + (box.dimensions.height / 2),
@@ -219,7 +219,6 @@ BoxPacker.prototype.each = function (callback) {
 (function () {
     var shelfDimensions, packer;
     var camera, scene, renderer;
-    var meshes = [];
 
     var rotateSpeed = 0;
 
@@ -227,10 +226,9 @@ BoxPacker.prototype.each = function (callback) {
 
     var textures = [0xff595e, 0xffca3a, 0x8ac926, 0x1982c4, 0x6a4c93, 0x1b85b8, 0x5a5255, 0x559e83, 0xae5a41, 0xc3cb71];
 
-    function shelf(opts) {
+    function shelf_mesh(opts) {
         var mesh = new THREE.Mesh(new THREE.BoxGeometry(opts.width, opts.height, opts.depth),
                                   new THREE.MeshBasicMaterial({ opacity: 0 }));
-        meshes.push(mesh);
 
         var shelfBack = new THREE.Mesh(new THREE.BoxGeometry(opts.width, opts.height, 5, 32, 32, 32),
                                        new THREE.MeshBasicMaterial({ opacity: 0.6, map: textureLoader.load('wood.jpg')}));
@@ -246,15 +244,13 @@ BoxPacker.prototype.each = function (callback) {
         return textures[index];
     }
 
-    function box(opts) {
+    function box_mesh(opts) {
         var mesh = new THREE.Mesh(new THREE.BoxGeometry(opts.width, opts.height, opts.depth, 4, 4, 4),
                                   new THREE.MeshBasicMaterial({ color: textureFor(opts) }));
 
         if (opts.position) {
             mesh.position.set.apply(mesh.position, opts.position);
         }
-
-        meshes.push(mesh);
 
         return [mesh, new THREE.EdgesHelper(mesh, 0x000000)];
     }
@@ -295,11 +291,11 @@ BoxPacker.prototype.each = function (callback) {
         renderer.setSize(window.innerWidth, window.innerHeight - 120);
 
         sceneMeshes = []
-        sceneMeshes = sceneMeshes.concat(shelf(shelfDimensions));
+        sceneMeshes = sceneMeshes.concat(shelf_mesh(shelfDimensions));
 
-        packer.each(function (dimensions, position) {
-            var params = Utils.objectMerge(dimensions, {position: position});
-            sceneMeshes = sceneMeshes.concat(box(params));
+        packer.each(function (box, position) {
+            var params = Utils.objectMerge(box.dimensions, {position: position});
+            sceneMeshes = sceneMeshes.concat(box_mesh(params));
         });
 
         sceneMeshes.forEach(function (mesh) {
