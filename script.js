@@ -11,8 +11,8 @@ var Boxes = [
     {name: 'Archival Legal', width: mm(5), height: mm(10.25), depth: mm(15.25)},
     {name: 'Archive Half Legal', width: mm(2.5), height: mm(10.25), depth: mm(15.25)},
     {name: 'Flat Box', width: mm(15), height: mm(3), depth: mm(18.5)},
-    {name: 'CD ', width: mm(0.4), height: mm(4.92), depth: mm(5.59), pile_options: { maxTowerCount: 1 }},
-    {name: 'DVD ', width: mm(0.55), height: mm(7.6), depth: mm(5.4), pile_options: { maxTowerCount: 1 }}
+    {name: 'CD ', width: mm(0.4), height: mm(4.92), depth: mm(5.59), pileOptions: { maxTowerCount: 1 }},
+    {name: 'DVD ', width: mm(0.55), height: mm(7.6), depth: mm(5.4), pileOptions: { maxTowerCount: 1 }}
 ];
 
 var Shelves = [
@@ -48,11 +48,11 @@ Utils.log = function (msg) {
     }, 2000);
 }
 
-Utils.choose_one = function (arr) {
+Utils.chooseOne = function (arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
-Utils.object_merge = function () {
+Utils.objectMerge = function () {
     var result = {}
 
     Array.prototype.slice.call(arguments).forEach(function (obj) {
@@ -107,7 +107,7 @@ Pile.prototype.maxBoxCount = function () {
     return (this.boxesPerTower() * numberOfTowers);
 }
 
-Pile.prototype.will_fit = function (box) {
+Pile.prototype.willFit = function (box) {
     // If it's the wrong type, it doesn't fit
     if ((this.boxes.length > 0) && this.boxes[0].name !== box.name) {
         return false;
@@ -134,7 +134,7 @@ function BoxPacker(shelfDimensions) {
 BoxPacker.prototype.findPileForBox = function (box) {
     var result = false;
     this.piles.some(function (pile) {
-        if (pile.will_fit(box)) {
+        if (pile.willFit(box)) {
             result = pile;
             return true;
         }
@@ -143,7 +143,7 @@ BoxPacker.prototype.findPileForBox = function (box) {
     return result;
 }
 
-BoxPacker.prototype.pile_fits = function (pile) {
+BoxPacker.prototype.pileFits = function (pile) {
     var pileWidths = 0;
     this.piles.forEach(function (pile) {
         pileWidths += pile.width();
@@ -169,10 +169,10 @@ BoxPacker.prototype.addBox = function (name, dimensions) {
         pile.add(box);
     } else {
         // New pile if one will fit on the shelf
-        var pile = new Pile(this.shelfDimensions, dimensions.pile_options || {});
+        var pile = new Pile(this.shelfDimensions, dimensions.pileOptions || {});
         pile.add(box);
 
-        if (this.pile_fits(pile)) {
+        if (this.pileFits(pile)) {
             this.piles.push(pile);
         } else {
             Utils.log("Out of space while placing box!");
@@ -223,7 +223,7 @@ BoxPacker.prototype.each = function (callback) {
 
     var rotateSpeed = 0;
 
-    var texture_loader = new THREE.TextureLoader();
+    var textureLoader = new THREE.TextureLoader();
 
     var textures = [0xff595e, 0xffca3a, 0x8ac926, 0x1982c4, 0x6a4c93, 0x1b85b8, 0x5a5255, 0x559e83, 0xae5a41, 0xc3cb71];
 
@@ -233,14 +233,14 @@ BoxPacker.prototype.each = function (callback) {
         meshes.push(mesh);
 
         var shelfBack = new THREE.Mesh(new THREE.BoxGeometry(opts.width, opts.height, 5, 32, 32, 32),
-                                       new THREE.MeshBasicMaterial({ opacity: 0.6, map: texture_loader.load('wood.jpg')}));
+                                       new THREE.MeshBasicMaterial({ opacity: 0.6, map: textureLoader.load('wood.jpg')}));
 
         shelfBack.position.z = -(opts.depth / 2) - 40;
 
         return [mesh, new THREE.EdgesHelper(mesh, 0xaaaaaa), shelfBack];
     }
 
-    function texture_for(opts) {
+    function textureFor(opts) {
         var index = Math.floor((opts.width + opts.height + opts.depth) % textures.length);
 
         return textures[index];
@@ -248,7 +248,7 @@ BoxPacker.prototype.each = function (callback) {
 
     function box(opts) {
         var mesh = new THREE.Mesh(new THREE.BoxGeometry(opts.width, opts.height, opts.depth, 4, 4, 4),
-                                  new THREE.MeshBasicMaterial({ color: texture_for(opts) }));
+                                  new THREE.MeshBasicMaterial({ color: textureFor(opts) }));
 
         if (opts.position) {
             mesh.position.set.apply(mesh.position, opts.position);
@@ -265,7 +265,7 @@ BoxPacker.prototype.each = function (callback) {
 
         // var i;
         // for (i = 0; i < 10; i++) {
-        //     var randomBox = Utils.choose_one(Boxes)
+        //     var randomBox = Utils.chooseOne(Boxes)
         //     packer.addBox(randomBox.name, randomBox);
         // }
 
@@ -294,15 +294,15 @@ BoxPacker.prototype.each = function (callback) {
 	renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(window.innerWidth, window.innerHeight - 120);
 
-        scene_meshes = []
-        scene_meshes = scene_meshes.concat(shelf(shelfDimensions));
+        sceneMeshes = []
+        sceneMeshes = sceneMeshes.concat(shelf(shelfDimensions));
 
         packer.each(function (dimensions, position) {
-            var params = Utils.object_merge(dimensions, {position: position});
-            scene_meshes = scene_meshes.concat(box(params));
+            var params = Utils.objectMerge(dimensions, {position: position});
+            sceneMeshes = sceneMeshes.concat(box(params));
         });
 
-        scene_meshes.forEach(function (mesh) {
+        sceneMeshes.forEach(function (mesh) {
             scene.add(mesh);
         });
 
@@ -331,12 +331,12 @@ BoxPacker.prototype.each = function (callback) {
                 var now = new Date().getTime();
 
                 if ((now - lastReadTime) > threshold) {
-                    var pixels_per_ms = (e.pageX - lastXPos) / ((now - lastReadTime) * 1.0);
+                    var pixelsPerMs = (e.pageX - lastXPos) / ((now - lastReadTime) * 1.0);
 
                     lastXPos = e.pageX;
                     lastReadTime = now;
 
-                    rotateSpeed = pixels_per_ms / 4.0;
+                    rotateSpeed = pixelsPerMs / 4.0;
                 }
             }
         });
