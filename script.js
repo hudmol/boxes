@@ -232,7 +232,12 @@ BoxPacker.prototype.each = function (callback) {
                                   new THREE.MeshBasicMaterial({ opacity: 0 }));
         meshes.push(mesh);
 
-        return [mesh, new THREE.EdgesHelper(mesh, 0xaaaaaa)];
+        var shelfBack = new THREE.Mesh(new THREE.BoxGeometry(opts.width, opts.height, 5, 32, 32, 32),
+                                       new THREE.MeshBasicMaterial({ opacity: 0.6, map: texture_loader.load('wood.jpg')}));
+
+        shelfBack.position.z = -(opts.depth / 2) - 40;
+
+        return [mesh, new THREE.EdgesHelper(mesh, 0xaaaaaa), shelfBack];
     }
 
     function texture_for(opts) {
@@ -285,6 +290,7 @@ BoxPacker.prototype.each = function (callback) {
         camera.updateProjectionMatrix();
 
         renderer = new THREE.CanvasRenderer();
+
 	renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(window.innerWidth, window.innerHeight - 100);
 
