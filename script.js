@@ -73,13 +73,18 @@ Utils.objectMerge = function () {
 // Packing logic
 //
 
+var boxId = 0;
+
 function Box(name, dimensions) {
+    this.id = boxId;
     this.name = name;
     this.dimensions = dimensions;
 
     this.bottomLeftBackCornerX = 0;
     this.bottomLeftBackCornerY = 0;
     this.bottomLeftBackCornerZ = 0;
+
+    boxId += 1;
 };
 
 // Add notion of pileability?
@@ -219,6 +224,7 @@ BoxPacker.prototype.each = function (callback) {
 (function () {
     var shelfDimensions, packer;
     var camera, scene, renderer;
+    var boxesInScene = {};
 
     var rotateSpeed = 0;
 
@@ -268,6 +274,22 @@ BoxPacker.prototype.each = function (callback) {
         renderScene();
     }
 
+    function addAllToScene(scene, meshes) {
+        meshes.forEach(function (mesh) {
+            scene.add(mesh);
+        });
+    }
+
+    function addBoxesToScene(scene, packer) {
+        packer.each(function (box, position) {
+            if (!boxesInScene[box.id]) {
+                var params = Utils.objectMerge(box.dimensions, {position: position});
+                addAllToScene(scene, box_mesh(params));
+                boxesInScene[box.id] = true;
+            }
+        });
+    }
+
     function renderScene() {
         scene = new THREE.Scene();
 
@@ -290,17 +312,8 @@ BoxPacker.prototype.each = function (callback) {
 	renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize(window.innerWidth, window.innerHeight - 120);
 
-        sceneMeshes = []
-        sceneMeshes = sceneMeshes.concat(shelf_mesh(shelfDimensions));
-
-        packer.each(function (box, position) {
-            var params = Utils.objectMerge(box.dimensions, {position: position});
-            sceneMeshes = sceneMeshes.concat(box_mesh(params));
-        });
-
-        sceneMeshes.forEach(function (mesh) {
-            scene.add(mesh);
-        });
+        addAllToScene(scene, shelf_mesh(shelfDimensions));
+        addBoxesToScene(scene, packer);
 
         var root = document.getElementById('drawing');
         root.innerHTML = '';
@@ -371,7 +384,7 @@ BoxPacker.prototype.each = function (callback) {
 
         button.addEventListener('click', function () {
             packer.addBox(box.name, box);
-            renderScene();
+            addBoxesToScene(scene, packer);
         });
 
         buttonBar.appendChild(button);
