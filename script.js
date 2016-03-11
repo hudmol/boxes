@@ -7,26 +7,36 @@ function mm(inches) {
 }
 
 var Boxes = [
-    {name: 'Paige 15', width: mm(12), depth: mm(15), height: mm(10)},
-    {name: 'Archival Legal', width: mm(5), height: mm(10.25), depth: mm(15.25)},
-    {name: 'Archive Half Legal', width: mm(2.5), height: mm(10.25), depth: mm(15.25)},
+    {name: 'Paige 15', depth: mm(15.5), height: mm(10.5), width: mm(13)},
+    {name: 'archive legal', depth: mm(15.5), height: mm(10.25), width: mm(5)},
+    {name: 'archive letter', depth: mm(12.5), height: mm(10.25), width: mm(5)},
+    {name: 'archive half legal', depth: mm(15.5), height: mm(10.25), width: mm(2.5)},
     {name: 'Flat Box', width: mm(15), height: mm(3), depth: mm(18.5)},
     {name: 'CD ', width: mm(0.4), height: mm(4.92), depth: mm(5.59), pileOptions: { maxTowerCount: 1 }},
     {name: 'DVD ', width: mm(0.55), height: mm(7.6), depth: mm(5.4), pileOptions: { maxTowerCount: 1 }}
 ];
 
+
 var Shelves = [
     {name: 'Default shelf', width: (1003 * 2), height: (266 * 3), depth: 500},
-    {name: 'record carton shelf (Remarque)', depth: mm(15.5), height: mm(10.5), width: mm(39.5)},
-    {name: 'oversize - short - TAM', depth: mm(32), height: mm(6.5), width: mm(39.5)},
-    {name: 'oversize - short - TAM 2', depth: mm(32), height: mm(6.5), width: mm(27.5)},
-    {name: '2 deep, 3 wide - 1 high', depth: mm(31.75), height: mm(11.75), width: mm(39.5)},
-    {name: '2 deep, 3 wide - 2 high', depth: mm(31.75), height: mm(22.75), width: mm(39.5)},
-    {name: 'oversize short', depth: mm(31.75), height: mm(10.75), width: mm(39.5)},
-    {name: "brent's cd shelf 1", depth: mm(7), height: mm(11), width: mm(41.5)},
-    {name: "brent's cd shelf 2", depth: mm(8.5), height: mm(12), width: mm(29.75)},
+    {name: 'record carton shelf (Remarque)', depth: mm(15.5), height: mm(10.75), width: mm(39.25)},
+    {name: 'oversize - short - TAM', depth: mm(31.75), height: mm(6.5), width: mm(39.5)},
+    {name: 'oversize - short - TAM 2', depth: mm(31.5), height: mm(6.5), width: mm(27.5)},
+    {name: '2 deep - 3 wide - 1 high', depth: mm(31.75), height: mm(11.75), width: mm(39.5)},
+    {name: '2 deep - 3 wide - 2 high', depth: mm(31.75), height: mm(22.75), width: mm(39.5)},
+    {name: 'oversize - short', depth: mm(41.5), height: mm(10.75), width: mm(29.25)},
+    {name: 'brent\'s cd shelf 1', depth: mm(7), height: mm(11), width: mm(41.5)},
+    {name: 'brent\'s cd shelf 2', depth: mm(8.5), height: mm(12), width: mm(29.5)},
     {name: 'Fales Media Storage 1', depth: mm(15), height: mm(16.75), width: mm(34)},
     {name: 'Fales Media Storage 2', depth: mm(15), height: mm(12.75), width: mm(34)},
+    {name: 'CSQ standard compact shelf', depth: mm(15.5), height: mm(11), width: mm(27.75)},
+    {name: 'CSQ extra high compact shelf with set back', depth: mm(15.5), height: mm(17.25), width: mm(27.75)},
+    {name: 'CSQ extra high compact shelf with no set back', depth: mm(15.5), height: mm(17.25), width: mm(27.75)},
+    {name: 'UA Shelving (varies)', depth: mm(15), height: mm(12), width: mm(35.5)},
+    {name: 'UA Shelf Zero', depth: mm(9), height: mm(23), width: mm(41.5)},
+    {name: 'Fales 10W - 2 wide', depth: mm(15.5), height: mm(11.25), width: mm(27.75)},
+    {name: 'Fales 10W - 3 wide', depth: mm(15.5), height: mm(11.25), width: mm(39.75)},
+    {name: 'Fales Media Storage 3 - tall', depth: mm(15.5), height: mm(22.5), width: mm(39.5)}
 ]
 
 ////////////////////////////////////////////////////////////////////////
