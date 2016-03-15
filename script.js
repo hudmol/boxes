@@ -12,6 +12,8 @@ var Boxes = [
     {name: 'archive letter', depth: mm(12.5), height: mm(10.25), width: mm(5)},
     {name: 'archive half legal', depth: mm(15.5), height: mm(10.25), width: mm(2.5)},
     {name: 'Flat Box', width: mm(15), height: mm(3), depth: mm(18.5)},
+    {name: 'Oversize Folder - half case', depth: mm(35.75), height: mm(0.15), width: mm(23.75)},
+    {name: 'Oversize Folder - full case', depth: mm(35.75), height: mm(0.15), width: mm(48)},
     {name: 'CD ', width: mm(0.4), height: mm(4.92), depth: mm(5.59), pileOptions: { maxTowerCount: 1 }},
     {name: 'DVD ', width: mm(0.55), height: mm(7.6), depth: mm(5.4), pileOptions: { maxTowerCount: 1 }}
 ];
@@ -29,6 +31,9 @@ var Shelves = [
     {name: 'brent\'s cd shelf 2', depth: mm(8.5), height: mm(12), width: mm(29.5)},
     {name: 'Fales Media Storage 1', depth: mm(15), height: mm(16.75), width: mm(34)},
     {name: 'Fales Media Storage 2', depth: mm(15), height: mm(12.75), width: mm(34)},
+    {name: 'map case 1', depth: mm(31.5), height: mm(1.75), width: mm(43)},
+    {name: 'map case 2', depth: mm(38), height: mm(1.75), width: mm(50)},
+    {name: 'map case 3', depth: mm(40.5), height: mm(0.75), width: mm(49.5)},
     {name: 'CSQ standard compact shelf', depth: mm(15.5), height: mm(11), width: mm(27.75)},
     {name: 'CSQ extra high compact shelf with set back', depth: mm(15.5), height: mm(17.25), width: mm(27.75)},
     {name: 'CSQ extra high compact shelf with no set back', depth: mm(15.5), height: mm(17.25), width: mm(27.75)},
