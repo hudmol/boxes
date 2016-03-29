@@ -201,6 +201,10 @@ BoxPacker.prototype.addBox = function (name, dimensions) {
     }
 };
 
+BoxPacker.prototype.dumpBoxes = function () {
+    return JSON.stringify(this.piles);
+};
+
 BoxPacker.prototype.each = function (callback) {
     var self = this;
     var xPosition = 0;
@@ -392,6 +396,7 @@ BoxPacker.prototype.each = function (callback) {
     animate();
 
     var buttonBar = document.getElementById('buttonBar');
+    var inDevMode = (window.location.search.indexOf("dev=1") >= 0);
 
     Boxes.forEach(function (box) {
         var button = document.createElement('button');
@@ -404,6 +409,20 @@ BoxPacker.prototype.each = function (callback) {
 
         buttonBar.appendChild(button);
     })
+
+    if (inDevMode) {
+        var dumpButton = document.createElement('button');
+        dumpButton.appendChild(document.createTextNode('Save shelf'));
+
+        dumpButton.addEventListener('click', function () {
+            document.getElementById('shelfDump').value = (packer.dumpBoxes() + "\n");
+            document.getElementById('shelfDump').select();
+        });
+
+        buttonBar.appendChild(dumpButton);
+    } else {
+        document.getElementById('shelfDump').style.display = 'none';
+    }
 
     var shelfSelector = document.createElement('select');
     shelfSelector.setAttribute('class', 'shelfSelector');
